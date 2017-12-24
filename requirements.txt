@@ -1,0 +1,8 @@
+aiohttp
+aiohttp_jinja2
+aiohttp_session
+aiopg
+cryptography
+jinja2
+SQLAlchemy
+twython

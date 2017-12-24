@@ -43,4 +43,6 @@ async def logout(request):
     session = await get_session(request)
     if not session.new:
         session.invalidate()
-    return web.Response(status=204)
+    return web.HTTPFound(
+        location=request.app.router['home'].url_for()
+    )
