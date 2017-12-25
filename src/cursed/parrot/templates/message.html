@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% if user %}
+    {% set user = user %}
+{% endif %}
+
+{% block content %}
+    <script>
+        $(document).ready(function() {
+            $('#example').DataTable();
+        } );
+    </script>
+
+    <table id="example" class="display" width="100%" cellspacing="0">
+        <thead>
+            <tr>
+                <th>UUID</th>
+                <th>Scheduled date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ message.uuid }}</td>
+                <td>{{ message.expires.date() }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

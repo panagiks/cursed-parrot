@@ -5,7 +5,6 @@
 {% endif %}
 
 {% block content %}
-    {% if user %}
         <form action="{{ url('create_message') }}" method="post">
             <div class="form-group">
                 <label class="pull-left" for="messageFormControlTextarea">Enter your message:</label>
@@ -14,5 +13,4 @@
                 <textarea class="form-control" id="messageFormControlTextarea" maxlength="250" rows="2" name="message"></textarea>
             </div>
         </form>
-    {% endif %}
 {% endblock %}

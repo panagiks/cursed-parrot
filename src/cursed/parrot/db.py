@@ -14,6 +14,8 @@ async def init_pg(app):
     # async with app['db'].acquire() as conn:
     #     await conn.execute(sa.schema.CreateTable(users_tbl))
     #     await conn.execute(sa.schema.CreateTable(oauth_providers_tbl))
+    #     await conn.execute(sa.schema.DropTable(messages_tbl))
+    #     await conn.execute(sa.schema.CreateTable(messages_tbl))
 
 
 async def close_pg(app):
@@ -83,6 +85,31 @@ async def get_oauth_provider(app, name):
     return (await result.fetchone())
 
 
+async def create_message(app, values):
+    async with app['db'].acquire() as conn:
+        result = await conn.execute(
+            messages_tbl.insert()
+            .values(**values)
+        )
+
+
+async def get_message(app, uuid):
+    async with app['db'].acquire() as conn:
+        result = await conn.execute(
+            messages_tbl.select()
+            .where(messages_tbl.c.uuid == uuid)
+        )
+    return (await result.fetchone())
+
+
+async def list_messages(app):
+    async with app['db'].acquire() as conn:
+        result = await conn.execute(
+            messages_tbl.select()
+        )
+    return (await result.fetchall())
+
+
 meta = sa.MetaData()
 
 
@@ -117,6 +144,7 @@ messages_tbl = sa.Table(
     'messages_tbl', meta,
     sa.Column('uuid', UUID, nullable=False, primary_key=True),
     sa.Column('user', UUID, sa.ForeignKey('users_tbl.uuid'), nullable=False),
-    sa.Column('private_key', sa.String(4098), nullable=False),
-    sa.Column('ciphertext', sa.String(250), nullable=False)
+    sa.Column('private_key', sa.Text, nullable=False),
+    sa.Column('ciphertext', sa.Text, nullable=False),
+    sa.Column('expires', sa.TIMESTAMP, nullable=False)
 )
