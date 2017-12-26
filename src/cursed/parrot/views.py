@@ -1,3 +1,4 @@
+import binascii
 import uuid
 
 from aiohttp import web
@@ -26,13 +27,13 @@ async def create_message(request):
     private_key = asymmetric.dump_private_key(private_key, None)
     user = await db.get_user(request.app, session['username'])
     message_uuid = uuid.uuid4().hex
-    await db.create_message(
+    res = await db.create_message(
         request.app,
         {
             'uuid': message_uuid,
             'user': user.uuid,
-            'private_key': private_key,
-            'ciphertext': ciphertext,
+            'private_key': binascii.hexlify(private_key).decode('UTF-8'),
+            'ciphertext': binascii.hexlify(ciphertext).decode('UTF-8'),
             'expires': date
         }
     )
@@ -45,8 +46,9 @@ async def create_message(request):
 
 @template('messages.html')
 async def messages_list(request):
-    messages = await db.list_messages(request.app)
     session = await get_session(request)
+    user = await db.get_user(request.app, session['username'])
+    messages = await db.list_messages(request.app, user.uuid)
     ret = {'user': session['username']} if 'username' in session else {}
     ret['messages'] = messages
     return ret
@@ -54,8 +56,24 @@ async def messages_list(request):
 
 @template('message.html')
 async def message_detail(request):
-    message = await db.get_message(request.app, request.match_info['uuid'])
     session = await get_session(request)
+    user = await db.get_user(request.app, session['username'])
+    message = await db.get_message(
+        request.app,
+        request.match_info['uuid'],
+        user.uuid
+    )
+    try:
+        decrypt = request.query['decrypt']
+    except KeyError:
+        decrypt = False
     ret = {'user': session['username']} if 'username' in session else {}
+    if decrypt:
+        ret['text'] = asymmetric.rsa_oaep_decrypt(
+            asymmetric.load_private_key(
+                binascii.unhexlify(message.private_key.lstrip("\\x"))
+            ),
+            binascii.unhexlify(message.ciphertext.lstrip("\\x"))
+        )
     ret['message'] = message
     return ret

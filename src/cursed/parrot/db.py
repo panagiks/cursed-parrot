@@ -93,19 +93,21 @@ async def create_message(app, values):
         )
 
 
-async def get_message(app, uuid):
+async def get_message(app, uuid, user):
     async with app['db'].acquire() as conn:
         result = await conn.execute(
             messages_tbl.select()
             .where(messages_tbl.c.uuid == uuid)
+            .where(messages_tbl.c.user == user)
         )
     return (await result.fetchone())
 
 
-async def list_messages(app):
+async def list_messages(app, user):
     async with app['db'].acquire() as conn:
         result = await conn.execute(
             messages_tbl.select()
+            .where(messages_tbl.c.user == user)
         )
     return (await result.fetchall())
 
@@ -144,7 +146,7 @@ messages_tbl = sa.Table(
     'messages_tbl', meta,
     sa.Column('uuid', UUID, nullable=False, primary_key=True),
     sa.Column('user', UUID, sa.ForeignKey('users_tbl.uuid'), nullable=False),
-    sa.Column('private_key', sa.Text, nullable=False),
-    sa.Column('ciphertext', sa.Text, nullable=False),
+    sa.Column('private_key', sa.String(8196), nullable=False),
+    sa.Column('ciphertext', sa.String, nullable=False),
     sa.Column('expires', sa.TIMESTAMP, nullable=False)
 )

@@ -7,7 +7,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link href="https://blackrockdigital.github.io/startbootstrap-bare/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
         <style>
           body {
             padding-top: 54px;
@@ -37,6 +36,7 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarResponsive">
       <ul class="navbar-nav ml-auto">
+        {% if user %}
         <li class="nav-item active">
           <a class="nav-link" href="{{ url('home') }}">Home
             <span class="sr-only">(current)</span>
@@ -48,6 +48,7 @@
         <li class="nav-item">
           <a class="nav-link" href="#">Services</a>
         </li>
+        {% endif %}
         <li class="nav-item">
             {% if user %}
                 <a class="nav-link" href="{{ url('logout') }}" > {{ user }} </a>
@@ -83,7 +84,6 @@
     <script src="https://blackrockdigital.github.io/startbootstrap-bare/vendor/jquery/jquery.min.js"></script>
     <script src="https://blackrockdigital.github.io/startbootstrap-bare/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function($) {
             $(".clickable-row").click(function() {
