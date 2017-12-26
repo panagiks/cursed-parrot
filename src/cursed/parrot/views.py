@@ -27,7 +27,7 @@ async def create_message(request):
     private_key = asymmetric.dump_private_key(private_key, None)
     user = await db.get_user(request.app, session['username'])
     message_uuid = uuid.uuid4().hex
-    res = await db.create_message(
+    await db.create_message(
         request.app,
         {
             'uuid': message_uuid,
